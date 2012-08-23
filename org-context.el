@@ -28,35 +28,47 @@
 ;; `org-capture-context-alist' is an alist of elements of the form
 ;; (REGEX . TEMPLATE-LIST) where REGEX is a regular expression
 ;; matching the buffer file-name or the buffer name and TEMPLATE-LIST
-;; is a list of templates as described in Org manual. In the case the
-;; REGEX is a directory path and all the templates are entries in a
-;; file in that directory one can use the helper function
+;; is a list of templates as described in Org manual or of the special
+;; form (KEY steal FILE ID) which allows you to steal the template
+;; definition specified by letter KEY in `org-capture-templates'. The
+;; targeted org file is replaced by FILE and ID is optional and
+;; replaces the old id. If FILE is a non-absolute file name and REGEX
+;; is a directory, FILE is expanded against REGEX.
+;;
+;; The merge between `org-capture-templates' and contextual ones is
+;; controlled by the variable `org-context-merge-strategy'. You can
+;; force all the contextual templates to be located in a submenu
+;; accessible by letter `org-context-capture-key'. You can try a merge
+;; if key sets are distinct (if not, contextual templates are placed in
+;; a submenu as in the previous case). And finally you can override
+;; templates.
+;;
+;; In the case the REGEX is a directory path and all the templates are
+;; entries in a file in that directory one can use the helper function
 ;; `org-capture-context-simple'.
 
 
-;; For example if you set,
+;; For example if you have,
 ;;
 ;; (setq org-context-capture-alist
-;;       '(("/home/homer/project/" .
-;;          (("a" "Todo for project" 'entry
-;;            ('file "/home/homer/project/todo.org"
-;;                   "* TODO %?\n  OPENED: %U"))
-;;           ("b" "Todo for project" 'entry
-;;             ('file "/home/homer/project/blah.org"
-;;                    "* TODO %?\n  OPENED: %U"))))))
+;;       '(
+;;         ("t" "todo" entry  (file "~/blah.org") "* my template")
+;;         ))
 ;;
-;; you have two extra capture templates when capturing from a file
-;; matching "/home/homer/project/".
-;;
-;; This is equivalent to,
+;; you can steal that definition in `org-context-capture-alist' by
+;; writing,
 ;;
 ;; (setq org-context-capture-alist
-;;       (org-context-capture-simple
-;;        "/home/homer/project/"
-;;        '(("a" "Todo for project"
-;;           "* TODO %?\n  OPENED: %U")
-;;          ("b" "Todo for project"
-;;           "* TODO %?\n  OPENED: %U" "blah.org"))))
+;;       '(("/home/homer/projectA/" .
+;;          (
+;;           ("t" steal "todo.org" "My todo id in projectA")
+;;           ("a" "Todo for projectA" entry
+;;            (file "/home/homer/projects/todo.org")
+;;            "* TODO %?\n  OPENED: %U")
+;;           ))))
+;;
+;; When capturing from files in projectA directory your templates will
+;; overridden or in a submenu.
 
 
 ;; In the same way it advices `org-agenda' to allow contextual agenda.
@@ -81,18 +93,37 @@ template list.")
   "c"
   "org-agenda context key")
 
-(defvar org-context-template-shortcut-alist
-  '((question "Question" "* QUESTION %?\n  OPENED: %U")
-    (todo "Todo" "* TODO %?\n  OPENED: %U"))
-  "Alist of symbols vs their corresponding template name and body.
-This is used in `org-context-capture-alist' to shorten the
-  template definition.")
+(defvar org-context-merge-strategy 'override
+  "Controls how the extra templates are merged into the already
+  existing ones.
+Possible values:
+  override: context templates override old ones.
+  submenu: context templates are placed in a submenu
+  merge: context templates are placed in a submenu if keys
+  conflicts, prepended otherwise.")
 
-(defvar org-context-default-template-list
-  '(("q" question)
-    ("t" todo))
-  "List of default templates to use in a project.")
-
+(defun org-context-steal-maybe (templates &optional directory)
+  "Returns TEMPLATES with stolen templates if any."
+  (mapcar
+   (lambda (steal-temp)
+     (if (eq (cadr steal-temp) 'steal)
+         (let* ((template (copy-tree (assoc (car steal-temp) org-capture-templates)))
+                (id (nth 3 steal-temp))
+                (file (nth 2 steal-temp))
+                (file (if (and (not (file-name-absolute-p file))
+                               (stringp directory))
+                          (expand-file-name file directory)
+                        file))
+                (target (nth 3 template)))
+           (if template
+               (if (null (string-match "\\`file" (symbol-name (car target))))
+                   (error "Couldn't find any target to modify.")
+                 (setcar (cdr target) file)
+                 (if id (setcar (cdr template) id)))
+             (error (format "No template with letter \"%s\" to steal from." (car steal-temp))))
+           template)
+       steal-temp))
+   templates))
 
 (defadvice org-capture (around org-context-capture activate)
   "Allow contextual capture templates.
@@ -100,33 +131,56 @@ This advice looks into `org-context-capture-alist' to see if the
 visited file at the time the capture is made match. If so, it
 adds to the existing templates the ones specified in the tail of
 the `org-context-capture-alist' corresponding entry."
-  (let* ((org-context-capture-templates
-          (assoc-default (expand-file-name
-                          (or buffer-file-name
-                              (and (eq major-mode 'dired-mode) default-directory)
-                              (buffer-name)))
-                         org-context-capture-alist
-                         'string-match))
+  (let* ((file-name (expand-file-name
+                     (or buffer-file-name
+                         (and (eq major-mode 'dired-mode) default-directory)
+                         (buffer-name))))
+         (org-context-capture-templates
+          (assoc-default file-name org-context-capture-alist 'string-match))
+         (directory (and org-context-capture-templates (match-string 0 file-name)))
+         (directory (and directory (file-name-absolute-p directory) directory))
+         (org-context-capture-templates
+          (org-context-steal-maybe org-context-capture-templates directory))
          (org-capture-templates
-          (append
-           (and org-context-capture-templates
-                ;; > 1 or = 1 and conflicting
-                (if (or (cdr org-context-capture-templates)
-                        (member (caar org-context-capture-templates)
-                                (mapcar #'car org-capture-templates)))
-                    (if (member org-context-capture-key
-                                (mapcar #'car org-capture-templates))
-                        (error "Context key \"%s\" conflicts with one of `org-capture-templates'."
-                               org-context-capture-key)
-                      (cons (list org-context-capture-key "Contextual templates")
-                            (mapcar
-                             (lambda (template)
-                               (cons (concat org-context-capture-key
-                                             (car template))
-                                     (cdr template)))
-                             org-context-capture-templates)))
-                  org-context-capture-templates))
-           org-capture-templates)))
+          (if org-context-capture-templates
+              ;; decide if in sub-menu or not
+              (if (or (eq org-context-merge-strategy 'submenu)
+                      (and (eq org-context-merge-strategy 'merge)
+                           (null (intersection
+                                  (mapcar #'car org-capture-templates)
+                                  (mapcar #'car org-context-capture-templates)))))
+                  (if (member org-context-capture-key
+                              (mapcar #'car org-capture-templates))
+                      (error "Context key \"%s\" conflicts with one of `org-capture-templates'."
+                             org-context-capture-key)
+                    (append (cons (list org-context-capture-key "Contextual templates")
+                                  (mapcar
+                                   (lambda (template)
+                                     (cons (concat org-context-capture-key
+                                                   (car template))
+                                           (cdr template)))
+                                   org-context-capture-templates))
+                            org-capture-templates))
+                (let (merged-templates)
+                  (mapc
+                   (lambda (old-temp)
+                     (setq merged-templates
+                           (cons (if (nth 2 old-temp)
+                                     (or (assoc (car old-temp) org-context-capture-templates)
+                                         old-temp)
+                                   (if (assoc (car old-temp) org-context-capture-templates)
+                                       (error "Trying to override a submenu key!")
+                                     old-temp))
+                                 merged-templates)))
+                   org-capture-templates)
+                  (mapc
+                   (lambda (c-temp)
+                     (if (not (assoc (car c-temp) org-capture-templates))
+                         (setq merged-templates
+                               (cons c-temp merged-templates))))
+                   org-context-capture-templates)
+                  (nreverse merged-templates)))
+            org-capture-templates)))
     ad-do-it))
 
 (defadvice org-agenda (around org-context-agenda activate)
