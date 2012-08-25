@@ -1,4 +1,4 @@
-;;; org-context.el --- Context agenda and capture for Org-mode
+;;; org-context.el --- Contextual agenda and capture for Org-mode
 
 ;; Copyright (C) 2012 Sylvain Rousseau <thisirs at gmail dot com>
 
