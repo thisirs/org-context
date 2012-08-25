@@ -289,7 +289,6 @@ the `org-context-agenda-alist' corresponding entry."
           (push temp merge))))
     (let ((org-agenda-custom-commands
            (or (nreverse merge) org-agenda-custom-commands)))
-      (debug-print org-agenda-custom-commands)
       ad-do-it)))
 
 (provide 'org-context)
