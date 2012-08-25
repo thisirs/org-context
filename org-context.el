@@ -199,7 +199,7 @@ This is used in `org-context-capture-alist' to shorten the
          new-temp)))
    templates))
 
-(defun org-context-agenda-expand (templates directory)
+(defun org-context-agenda-expand (templates directory file-name)
   "Expand templates in the list of templates TEMPLATES."
   (mapcar
    (lambda (temp)
@@ -211,7 +211,7 @@ This is used in `org-context-capture-alist' to shorten the
                           (and (listp (cadr temp)) (nth 1 (cadr temp)))
                           (list "todo.org")))
               (id (and (listp (cadr temp)) (nth 2 (cadr temp))))
-              new-temp index)
+              new-temp index extra-settings)
          (setq org-files
                (mapcar
                 (lambda (file)
@@ -234,13 +234,21 @@ This is used in `org-context-capture-alist' to shorten the
                  (setcar (cdr new-temp) id)
                (setcdr new-temp (cons id (cdr new-temp)))))
          (setq index (if (stringp (nth 1 new-temp)) 4 3))
+         (setq extra-settings
+               (list
+                `(org-agenda-files (quote ,org-files))
+                `(default-directory ,directory)
+                `(org-agenda-buffer-name
+                  (quote ,(format
+                           "*Agenda(%s)*"
+                           (file-name-nondirectory
+                            (directory-file-name
+                             (file-name-directory file-name))))))))
          (if (<= (length new-temp) index) ; settings exists?
              (setcdr (last new-temp)
-                     (list (list `(org-agenda-files
-                                   (quote ,org-files)))))
+                     (list extra-settings))
            (setcdr (last (nth index new-temp))
-                   (list `(org-agenda-files
-                           (quote ,org-files)))))
+                   extra-settings))
          new-temp)))
    templates))
 
@@ -270,7 +278,7 @@ the `org-context-agenda-alist' corresponding entry."
         (setq alist (cdr alist))))
     (when templates
       (setq templates
-            (org-context-agenda-expand templates directory))
+            (org-context-agenda-expand templates directory file-name))
       ;; add templates eventually overridden to `merge'
       (dolist (temp org-agenda-custom-commands)
         (push (or (assoc (car temp) templates)
