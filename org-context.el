@@ -199,7 +199,7 @@ This is used in `org-context-capture-alist' to shorten the
          new-temp)))
    templates))
 
-(defun org-context-agenda-expand (templates directory file-name)
+(defun org-context-agenda-expand (templates directory)
   "Expand templates in the list of templates TEMPLATES."
   (mapcar
    (lambda (temp)
@@ -240,10 +240,12 @@ This is used in `org-context-capture-alist' to shorten the
                 `(default-directory ,directory)
                 `(org-agenda-buffer-name
                   (quote ,(format
-                           "*Agenda(%s)*"
-                           (file-name-nondirectory
-                            (directory-file-name
-                             (file-name-directory file-name))))))))
+                           "*Agenda(%s:%s)*"
+                           (if directory
+                               (file-name-nondirectory
+                                (directory-file-name
+                                 directory)) "??")
+                           (car temp))))))
          (if (<= (length new-temp) index) ; settings exists?
              (setcdr (last new-temp)
                      (list extra-settings))
@@ -278,7 +280,7 @@ the `org-context-agenda-alist' corresponding entry."
         (setq alist (cdr alist))))
     (when templates
       (setq templates
-            (org-context-agenda-expand templates directory file-name))
+            (org-context-agenda-expand templates directory))
       ;; add templates eventually overridden to `merge'
       (dolist (temp org-agenda-custom-commands)
         (push (or (assoc (car temp) templates)
