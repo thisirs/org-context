@@ -72,7 +72,7 @@
 ;;                ;; full definition as in Org manual
 ;;                ("u" "Todo" entry
 ;;                 (file "/home/homer/ProjectA/todo.org")
-;;                 " * TODO %?\n  OPENED: %U")
+;;                 "* TODO %?\n  OPENED: %U")
 ;;                ))
 
 ;; we now have 3 extra captures for that project eventually
