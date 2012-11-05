@@ -182,14 +182,15 @@ This is used in `org-context-capture-alist' to shorten the
       ;; expand templates to look like as expected by org
       (setq templates
             (org-context-capture-expand templates directory))
+      ;; merge `templates' and `org-capture-templates'
 
       ;; add eventually overridden templates to `merge'
       (dolist (temp org-capture-templates)
-        (setq o-temp (assoc (car temp) templates))
-        (if (null o-temp)
-            (push temp merge)
-          (push temp overridden-templates)
-          (push o-temp merge)))
+        (let ((o-temp (assoc (car temp) templates)))
+          (if (null o-temp)
+              (push temp merge)
+            (push temp overridden-templates)
+            (push o-temp merge))))
 
       ;; add the rest in `templates'
       (dolist (temp templates)
