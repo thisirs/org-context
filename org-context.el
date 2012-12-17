@@ -198,9 +198,8 @@ This is used in `org-context-capture-alist' to shorten the
           (push temp merge)))
 
       ;; eventually add overridden templates in submenu
-      (when org-context-add-overridden
-        (if overridden-templates
-            (push '("o" "Overridden") merge))
+      (when (and org-context-add-overridden overridden-templates)
+        (push '("o" "Overridden") merge)
         (dolist (temp (nreverse overridden-templates))
           (push (cons (concat "o" (car temp)) (cdr temp))
                 merge))))
@@ -391,11 +390,11 @@ the `org-context-agenda-alist' corresponding entry."
 
       ;; add eventually overridden templates to `merge'
       (dolist (temp org-agenda-custom-commands)
-        (setq o-temp (assoc (car temp) templates))
-        (if (null o-temp)
-            (push temp merge)
-          (push temp overridden-templates)
-          (push o-temp merge)))
+        (let ((o-temp (assoc (car temp) templates)))
+          (if (null o-temp)
+              (push temp merge)
+            (push temp overridden-templates)
+            (push o-temp merge))))
 
       ;; add the rest in `templates'
       (dolist (temp templates)
@@ -403,9 +402,8 @@ the `org-context-agenda-alist' corresponding entry."
           (push temp merge)))
 
       ;; eventually add overridden templates in submenu
-      (when org-context-add-overridden
-        (if overridden-templates
-            (push '("o" . "Overridden") merge))
+      (when (and org-context-add-overridden overridden-templates)
+        (push '("o" . "Overridden") merge)
         (dolist (temp (nreverse overridden-templates))
           (push (cons (concat "o" (car temp)) (cdr temp))
                 merge))))
