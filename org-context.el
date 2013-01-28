@@ -44,7 +44,7 @@
 ;; FILE is specified, the target file in that template is replaced by
 ;; FILE and the description by DESC. If FILE is not specified or is
 ;; not an absolute path, FILE is expanded against the string matched
-;; by REGEX.
+;; by CONDITION if it is a regex.
 
 ;; In the same way, `org-context-agenda-alist' is an alist of elements
 ;; of the form (CONDITION . TEMPLATE-LIST) where CONDITION is either a
@@ -58,7 +58,8 @@
 ;; look up custom commands in `org-agenda-custom-commands'. If
 ;; specified, FILE-LIST is the list of files used to construct the
 ;; agenda. All file's name in FILE-LIST are expanded against the
-;; string matched by REGEX.
+;; string matched by CONDITION if it is a regex.
+
 
 ;; For example, say we have a project named "ProjectA" located in
 ;; "/home/homer/ProjectA" and several todo files in that project
