@@ -1,23 +1,19 @@
 
 (ert-deftest org-context-advice ()
   "Tests if `org-agenda' and 'org-capture' are advised."
-  (require 'advice)
   (should (ad-is-advised 'org-agenda))
   (should (ad-is-advised 'org-capture))
   (should-not (ad-is-active 'org-agenda))
   (should-not (ad-is-active 'org-capture))
 
   (org-context-activate 1)
-  (ad-activate 'org-capture)
-  (ad-activate 'org-agenda)
 
   (should (ad-is-active 'org-agenda))
   (should (ad-is-active 'org-capture))
 
-  ;; (org-context-activate -1)
-  ;; (should-not (ad-is-active 'org-agenda))
-  ;; (should-not (ad-is-active 'org-capture)))
-  )
+  (org-context-activate -1)
+  (should-not (ad-is-active 'org-agenda))
+  (should-not (ad-is-active 'org-capture)))
 
 (ert-deftest org-context-agenda-check-local ()
   "Tests if `org-context-agenda' is local."

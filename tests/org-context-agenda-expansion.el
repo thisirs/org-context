@@ -70,7 +70,6 @@
    ("t" "Agenda and all TODO's"
     ((agenda "")
      (alltodo ""))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:t)*")
      (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
 
@@ -80,7 +79,6 @@
    ("q" "Agenda and all TODO's"
     ((agenda "")
      (alltodo ""))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
      (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
 
@@ -90,7 +88,6 @@
    ("q" "Agenda and all TODO's"
     ((agenda "")
      (alltodo ""))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
      (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
 
@@ -100,7 +97,6 @@
    ("q" "Agenda and all TODO's"
     ((agenda "")
      (alltodo ""))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
      (org-agenda-files '("/home/homer/ProjectA/blah.org"))))))
 
@@ -110,11 +106,9 @@
    ("q" "Agenda and all TODO's"
     ((agenda "")
      (alltodo ""))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
      (org-agenda-files '("/home/homer/ProjectA/blah.org"
                          "/home/homer/ProjectA/todo.org"))))))
-
 
 (ert-deftest org-context-agenda-check-regular-1 ()
   (org-context-agenda-check-expansion
@@ -152,14 +146,12 @@
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-files
       '("/home/homer/ProjectB/todo.org"))))
    ("d" "Block agenda"
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:d)*")
      (org-agenda-files
       '("/home/homer/ProjectB/todo.org"))))))
@@ -170,14 +162,12 @@
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-files
       '("todo.org"))))
    ("d" "Block agenda"
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:d)*")
      (org-agenda-files
       '("/home/homer/ProjectA/todo.org"))))))
@@ -198,14 +188,12 @@
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-files
       '("todo.org" "blah.org"))))
    ("d" "Block agenda"
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:d)*")
      (org-agenda-files
       '("/home/homer/ProjectA/todo.org"
@@ -228,14 +216,12 @@
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-files
       '("todo.org" "blah.org"))))
    ("d" "Block agenda"
     ((agenda "")
      (tags-todo "home")
      (tags "garden"))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:d)*")
      (org-agenda-files
       '("/home/homer/ProjectA/todo.org"
@@ -249,7 +235,6 @@
                 ((org-agenda-files
                   '("todo1.org" "blah1.org"))))
      (tags "garden"))
-    nil
     ((org-agenda-files
       '("todo.org" "blah.org"))))
    ("d" "Block agenda"
@@ -259,7 +244,6 @@
                   '("/home/homer/ProjectA/todo1.org"
                     "/home/homer/ProjectA/blah1.org"))))
      (tags "garden"))
-    nil
     ((org-agenda-buffer-name "*Agenda(ProjectA:d)*")
      (org-agenda-files
       '("/home/homer/ProjectA/todo.org"

@@ -18,6 +18,7 @@
   (load (expand-file-name "org-context-agenda-expansion.el" test-path) t t)
   (load (expand-file-name "org-context-capture-expansion.el" test-path) t t)
   (load (expand-file-name "org-context-agenda-test-exception.el" test-path) t t)
+  (load (expand-file-name "org-context-safe.el" test-path) t t)
 
   (setq eval-expression-print-length nil)
   (setq eval-expression-print-level nil)
