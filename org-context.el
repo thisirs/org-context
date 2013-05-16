@@ -162,6 +162,34 @@ the Org manual that will be added to the set of default ones.")
 (defvar org-context-capture nil
   "Buffer local variable that holds the templates definitions.")
 (make-variable-buffer-local 'org-context-capture)
+(put 'org-context-capture 'safe-local-variable 'org-context-capture-safe-p)
+
+(defun org-context-capture-safe-p (templates)
+  "Return non-nil if the list of capture templates TEMPLATES is safe.
+
+A template is considered safe if it does not have to evaluate
+arbitrary functions."
+  (let ((safe t) template)
+    (if (listp templates)
+        (while (and templates safe)
+          (setq template (car templates))
+          (if (and
+               (listp template)
+               (= (length template) 5)
+               (or
+                (and
+                 (consp (nth 3 template))
+                 (or
+                  (string-match "function$"
+                                (symbol-name (car (nth 3 template))))
+                  (and (string-match "^file"
+                                     (symbol-name (car (nth 3 template))))
+                       (not (string-or-null-p (cadr (nth 3 template)))))))
+                (string-match "%(" (nth 4 template))))
+              (setq safe nil)
+            (setq templates (cdr templates))))
+      (setq safe nil))
+    safe))
 
 (defvar org-context-agenda-alist
   nil
@@ -171,6 +199,35 @@ the Org manual that will be added to the set of default ones.")
 (defvar org-context-agenda nil
   "Buffer local variable that holds the custom agenda commands.")
 (make-variable-buffer-local 'org-context-agenda)
+(put 'org-context-agenda 'safe-local-variable 'org-context-agenda-safe-p)
+
+(defun org-context-agenda-safe-p (commands)
+  (let ((safe t)
+        (keywords '(agenda agenda* alltodo search stuck tags tags-todo
+                           todo tags-tree todo-tree occur-tree))
+        command)
+    (if (listp commands)
+        (while (and commands safe)
+          (setq command (car commands))
+          (if (and (listp command)
+                   (> (length command) 2)
+                   (if (stringp (nth 1 command))
+                       (or (functionp (nth 2 command))
+                           (and (symbolp (nth 2 command))
+                                (fboundp (nth 2 command)))
+                           (functionp (nth 3 command))
+                           (and (symbolp (nth 3 command))
+                                (fboundp (nth 3 command))))
+                     (or (functionp (nth 1 command))
+                         (and (symbolp (nth 1 command))
+                              (fboundp (nth 1 command)))
+                         (functionp (nth 2 command))
+                         (and (symbolp (nth 2 command))
+                              (fboundp (nth 2 command))))))
+              (setq safe nil)
+            (setq commands (cdr commands))))
+      (setq safe nil))
+    safe))
 
 (defvar org-context-capture-shortcut
   '((question
