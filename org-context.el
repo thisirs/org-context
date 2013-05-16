@@ -275,7 +275,7 @@ file-name and expand it against DIRECTORY."
 
 (defun org-context-capture--expand-stolen (template directory)
   "Expand the stolen template TEMPLATE."
-  (let (key stolen file desc)
+  (let (temp key stolen file desc)
     (cond
      ((stringp template)
       (setq stolen template
@@ -412,42 +412,55 @@ files."
   "Expand the agenda command COMMAND by adding an
 org-agenda-buffer-name property and expanding org files path
 against DIRECTORY."
-  (setq command
-        (cond
-         ((stringp (nth 1 command)) command)
-         ((not (nth 1 command)) (cons (car command) (cons "" (cddr command))))
-         (t (cons (car command) (cons "" (cdr command))))))
+  (let (type settings)
 
-  ;; Expand org-agenda-files key in type
-  (setq type (nth 2 command))
-  (when (listp type)
-    (setq type
-          (mapcar
-           (lambda (sub-type)
-             (let ((alist (nth 2 sub-type)))
-               (if alist
-                   (cons (car sub-type)
-                         (list (nth 1 sub-type)
-                               (org-context-agenda--expand-alist
-                                alist directory)))
-                 sub-type)))
-           (nth 2 command))))
-  ;; Expand settings
-  (setq settings
-        (cons `(org-agenda-buffer-name
-                ,(format
-                  "*Agenda(%s:%s)*"
-                  (if directory
-                      (file-name-nondirectory
-                       (directory-file-name
-                        directory)) "??")
-                  (car command)))
-              (org-context-agenda--expand-alist (nth 4 command) directory files)))
+    ;; First normalize different versions
+    (setq command
+          (cond
+           ((stringp (nth 1 command)) command)
+           ((not (nth 1 command)) (cons (car command) (cons "" (cddr command))))
+           (t (cons (car command) (cons "" (cdr command))))))
 
-  (if (nth 5 command)
-      (list (car command) (nth 1 command) type (nth 3 command) settings
-            (nth 5 command))
-    (list (car command) (nth 1 command) type (nth 3 command) settings)))
+    ;; Settings is at a different place if type is a bloc agenda
+    (setq type (nth 2 command))
+    (if (listp type)
+        (setq settings (nth 3 command))
+      (setq settings (nth 4 command)))
+
+    ;; Expand org-agenda-files key in type
+    (when (listp type)
+      (setq type
+            (mapcar
+             (lambda (sub-type)
+               (let ((alist (nth 2 sub-type)))
+                 (if alist
+                     (cons (car sub-type)
+                           (list (nth 1 sub-type)
+                                 (org-context-agenda--expand-alist
+                                  alist directory)))
+                   sub-type)))
+             (nth 2 command))))
+
+    ;; Expand settings
+    (setq settings
+          (cons `(org-agenda-buffer-name
+                  ,(format
+                    "*Agenda(%s:%s)*"
+                    (if directory
+                        (file-name-nondirectory
+                         (directory-file-name
+                          directory)) "??")
+                    (car command)))
+                (org-context-agenda--expand-alist settings directory files)))
+
+    (if (listp type)
+        (if (nth 4 command)
+            (list (car command) (nth 1 command) type settings (nth 4 command))
+          (list (car command) (nth 1 command) type settings))
+      (if (nth 5 command)
+          (list (car command) (nth 1 command) type (nth 3 command) settings
+                (nth 5 command))
+        (list (car command) (nth 1 command) type (nth 3 command) settings)))))
 
 (defun org-context-agenda--expand-alist (alist directory &optional files)
   "Return a alist with all org path expanded"
