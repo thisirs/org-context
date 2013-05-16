@@ -89,7 +89,7 @@
 ;; CONDITION if it is a regex.
 ;;
 ;; Valid definitions are for example,
-;; (add-to-list 'org-context-capture-alist
+;; (add-to-list 'org-context-agenda-alist
 ;;              '("/home/homer/ProjectA"
 ;;                question
 ;;                ("q" question)
