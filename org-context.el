@@ -269,7 +269,7 @@ file-name and expand it against DIRECTORY."
       (append
        (list (car template) (nth 1 template) (nth 2 template)
              (list (car (nth 3 template))
-                   (expand-file-name (or replace (cadr (nth 3 temp))) directory)))
+                   (expand-file-name (or replace (cadr (nth 3 template))) directory)))
        (nthcdr 4 template))
     template))
 
