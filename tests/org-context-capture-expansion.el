@@ -106,3 +106,13 @@
    ("t" "Todo" entry
     (file "/home/homer/ProjectA/todo.org")
     "* TODO %?\n  OPENED: %U")))
+
+(ert-deftest org-context-capture-check-regular-3 ()
+  "Test target expansion in regular template"
+  (org-context-capture-check-expansion
+   ("t" "Todo" entry
+    (file+function "todo.org" blah)
+    "* TODO %?\n  OPENED: %U")
+   ("t" "Todo" entry
+    (file+function "/home/homer/ProjectA/todo.org" blah)
+    "* TODO %?\n  OPENED: %U")))

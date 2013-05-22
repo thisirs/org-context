@@ -268,8 +268,10 @@ file-name and expand it against DIRECTORY."
                          (file-name-absolute-p (cadr (nth 3 template)))))))
       (append
        (list (car template) (nth 1 template) (nth 2 template)
-             (list (car (nth 3 template))
-                   (expand-file-name (or replace (cadr (nth 3 template))) directory)))
+             (append (list (car (nth 3 template))
+                           (expand-file-name
+                            (or replace (cadr (nth 3 template))) directory))
+                     (cddr (nth 3 template))))
        (nthcdr 4 template))
     template))
 
