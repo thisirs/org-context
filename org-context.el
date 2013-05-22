@@ -321,6 +321,7 @@ files."
   (mapcar
    (lambda (temp)
      (if (and (listp temp)
+              (= (length temp) 2)
               (stringp (cadr temp))
               (> (length (cadr temp)) 2))
          ;; This template is a sub-menu, return as is.

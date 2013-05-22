@@ -87,11 +87,22 @@
       (file "/home/homer/ProjectA/blah.org")
       "* TODO %?\n  OPENED: %U")))
 
-(ert-deftest org-context-capture-check-regular ()
+(ert-deftest org-context-capture-check-regular-1 ()
+  "Test relative target expansion in regular template"
     (org-context-capture-check-expansion
      ("t" "Todo" entry
-      (file "/home/homer/ProjectA/todo.org")
+      (file "todo.org")
       "* TODO %?\n  OPENED: %U")
      ("t" "Todo" entry
       (file "/home/homer/ProjectA/todo.org")
       "* TODO %?\n  OPENED: %U")))
+
+(ert-deftest org-context-capture-check-regular-2 ()
+  "Test target expansion in regular template"
+  (org-context-capture-check-expansion
+   ("t" "Todo" entry
+    (file "/home/homer/ProjectA/todo.org")
+    "* TODO %?\n  OPENED: %U")
+   ("t" "Todo" entry
+    (file "/home/homer/ProjectA/todo.org")
+    "* TODO %?\n  OPENED: %U")))
