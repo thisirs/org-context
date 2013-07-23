@@ -3,6 +3,7 @@
 ;; Copyright (C) 2012-2013 Sylvain Rousseau <thisirs at gmail dot com>
 
 ;; Author: Sylvain Rousseau <thisirs at gmail dot com>
+;; URL: https://github.com/thisirs/org-context
 ;; Keywords: Org, capture, agenda, convenience
 
 ;; This program is free software; you can redistribute it and/or modify
