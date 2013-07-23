@@ -643,6 +643,7 @@ the new set of custom commands."
     (with-current-buffer buffer
       (org-agenda nil key))))
 
+;;;###autoload
 (defun org-context-activate (&optional arg)
   (interactive "P")
   (if (< (prefix-numeric-value arg) 0)
