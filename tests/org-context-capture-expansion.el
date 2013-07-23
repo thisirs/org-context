@@ -67,11 +67,11 @@
       "* TODO %?\n  OPENED: %U")))
 
 (ert-deftest org-context-capture-check-keysteal+key-1 ()
-    (org-context-capture-check-expansion
-     ("q" ("t"))
-     ("q" "Todo" entry
-      (file "/home/homer/ProjectA/todo.org")
-      "* TODO %?\n  OPENED: %U")))
+  (org-context-capture-check-expansion
+   ("q" ("t"))
+   ("q" "Todo" entry
+    (file "/home/homer/ProjectA/todo.org")
+    "* TODO %?\n  OPENED: %U")))
 
 (ert-deftest org-context-capture-check-keysteal+key+file ()
     (org-context-capture-check-expansion
@@ -116,3 +116,13 @@
    ("t" "Todo" entry
     (file+function "/home/homer/ProjectA/todo.org" blah)
     "* TODO %?\n  OPENED: %U")))
+
+(ert-deftest org-context-capture-check-regular-4 ()
+  "Test target expansion in regular template"
+  (org-context-capture-check-expansion
+   ("t" "Todo" entry
+    (file+function "todo.org" blah)
+    "* TODO %?\n  OPENED: %U" :unnarrowed t)
+   ("t" "Todo" entry
+    (file+function "/home/homer/ProjectA/todo.org" blah)
+    "* TODO %?\n  OPENED: %U" :unnarrowed t)))
