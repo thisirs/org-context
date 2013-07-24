@@ -5,11 +5,14 @@ contextual capture and agenda commands.
 
 ## Installation
 
-Just put `org-context.el` in you load path and add this to your
-`.emacs`:
+Install the ELPA package from MELPA with <kbd>M-x</kbd>
+`package-install` <kbd>RET</kbd> `org-context` or put
+`org-context.el` in you load path and require it somewhere in your
+`.emacs`.
 
+
+`org-context` needs then to be activated
 ```lisp
-(require 'org-context)
 (org-context-activate)
 ```
 
