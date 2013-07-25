@@ -84,6 +84,10 @@ arbitrary functions."
 (put 'org-context-agenda 'safe-local-variable 'org-context-agenda-safe-p)
 
 (defun org-context-agenda-safe-p (commands)
+  "Return non-nil if the list of agenda commands COMMANDS is safe.
+
+An agenda command is considered safe if it does not have to evaluate
+arbitrary functions."
   (let ((safe t)
         (keywords '(agenda agenda* alltodo search stuck tags tags-todo
                            todo tags-tree todo-tree occur-tree))
@@ -219,6 +223,11 @@ files."
    templates))
 
 (defun org-context-capture-templates ()
+  "Return a set of capture templates including contextual ones.
+
+This function looks into `org-context-capture-alist' or
+`org-context-capture' to see if there is any matching capture
+templates."
   (let ((file-name (or buffer-file-name
                        (and (eq major-mode 'dired-mode)
                             default-directory)
@@ -527,6 +536,7 @@ the new set of custom commands."
 
 ;;;###autoload
 (defun org-context-activate (&optional arg)
+  "Activate `org-context' if ARG is non-numeric or >= 0."
   (interactive "P")
   (if (< (prefix-numeric-value arg) 0)
       (progn (ad-deactivate 'org-capture)
