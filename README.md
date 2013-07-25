@@ -1,7 +1,12 @@
 # org-context
 
 This package advises `org-capture` and `org-agenda` to allow
-contextual capture and agenda commands.
+contextual capture and agenda commands. This can be used to set up
+per-project captures and agenda commands. For example, this project
+has two org files: `todo.org` and `tests/todo.org`. Pressing <kbd>C-c
+a t</kbd> displays agenda blocks corresponding to these todo files.
+
+![agenda screenshot](img/screenshot1.png)
 
 ## Installation
 
