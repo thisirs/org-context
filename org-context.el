@@ -27,6 +27,13 @@
 ;;
 ;; See documentation on https://github.com/thisirs/org-context#org-context
 
+;;; Installation:
+
+;; Put the following in your .emacs:
+
+;; (require 'org-context)
+;; (org-context-activate)
+
 ;;; Code
 
 (require 'org)
