@@ -30,9 +30,13 @@
 ;;; Installation:
 
 ;; Put the following in your .emacs:
-
+;;
 ;; (require 'org-context)
 ;; (org-context-activate)
+;;
+;; and customize `org-context-capture-alist' and `org-context-capture'
+;; for contextual captures and `org-context-agenda-alist'
+;; `org-context-agenda' for custom commands.
 
 ;;; Code
 
