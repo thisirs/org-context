@@ -226,3 +226,9 @@ We then setup the agenda commands for that project.
                 ((org-agenda-files
                   '("/home/homer/ProjectA/todo.org"))))))
 ```
+
+## Caveats
+
+Using `org-context` when the sticky agenda feature is on causes
+problems. This is due to the fact that `org-context` changes the name
+of its agenda buffer and `org` overwrites this change.
