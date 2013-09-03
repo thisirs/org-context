@@ -529,6 +529,7 @@ the new set of custom commands."
   (let ((org-agenda-custom-commands (org-context-agenda-commands)))
     ad-do-it))
 
+;;;###autoload
 (defun org-context-agenda-from (file-or-buffer key)
   (let (org-agenda-context-commands buffer)
     (cond
