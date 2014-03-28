@@ -19,38 +19,38 @@
   (org-context-agenda-check-expansion
    todo
    ("t" "" todo "WAITING" ((org-agenda-buffer-name "*Agenda(ProjectA:t)*")
-                        (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
+                           (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
 
 (ert-deftest org-context-agenda-check-symbolsteal+key ()
   (org-context-agenda-check-expansion
    ("q" todo)
    ("q" "" todo "WAITING" ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
-                        (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
+                           (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
 
 (ert-deftest org-context-agenda-check-symbolsteal+key-1 ()
   (org-context-agenda-check-expansion
    ("q" (todo))
    ("q" "" todo "WAITING" ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
-                        (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
+                           (org-agenda-files '("/home/homer/ProjectA/todo.org"))))))
 
 (ert-deftest org-context-agenda-check-symbolsteal+key+file ()
   (org-context-agenda-check-expansion
    ("q" (todo "blah.org"))
    ("q" "" todo "WAITING" ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
-                        (org-agenda-files '("/home/homer/ProjectA/blah.org"))))))
+                           (org-agenda-files '("/home/homer/ProjectA/blah.org"))))))
 
 (ert-deftest org-context-agenda-check-symbolsteal+key+file+desc ()
   (org-context-agenda-check-expansion
    ("q" (todo "blah.org" "Desc"))
    ("q" "Desc" todo "WAITING" ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
-                           (org-agenda-files '("/home/homer/ProjectA/blah.org"))))))
+                               (org-agenda-files '("/home/homer/ProjectA/blah.org"))))))
 
 (ert-deftest org-context-agenda-check-symbolsteal+key+files ()
   (org-context-agenda-check-expansion
    ("q" (todo ("blah.org" "todo.org")))
    ("q" "" todo "WAITING" ((org-agenda-buffer-name "*Agenda(ProjectA:q)*")
-                        (org-agenda-files '("/home/homer/ProjectA/blah.org"
-                                            "/home/homer/ProjectA/todo.org"))))))
+                           (org-agenda-files '("/home/homer/ProjectA/blah.org"
+                                               "/home/homer/ProjectA/todo.org"))))))
 
 (ert-deftest org-context-agenda-check-symbolsteal+key+files+desc ()
   (org-context-agenda-check-expansion
