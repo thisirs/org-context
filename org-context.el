@@ -49,8 +49,9 @@
 Each element is of the form (CONDITION . TEMPLATE-LIST) where
 CONDITION is either a symbol matching a major mode or a regular
 expression matching the buffer file-name or the buffer name and
-TEMPLATE-LIST is a list contextual capture templates as described in
-the Org manual that will be added to the set of default ones.")
+TEMPLATE-LIST is a list of contextual capture templates as
+described in the Org manual that will be added to the set of
+default ones.")
 
 (defvar org-context-capture nil
   "Buffer local variable that holds the templates definitions.")
