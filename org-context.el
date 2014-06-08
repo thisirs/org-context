@@ -381,7 +381,11 @@ against DIRECTORY."
         (list (car command) (nth 1 command) type (nth 3 command) settings)))))
 
 (defun org-context-agenda--expand-alist (alist directory &optional files)
-  "Return a alist with all org path expanded"
+  "Expand the property list ALIST.
+
+Add an `org-agenda-files' property if not already present and
+expand its files against DIRECTORY or expand FILES against
+DIRECTORY if no files are present."
   (unless (assoc 'org-agenda-files alist)
     (setq alist (cons (cons 'org-agenda-files nil) alist)))
   (setq alist
