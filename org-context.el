@@ -313,6 +313,19 @@ templates."
   (let ((org-capture-templates (org-context-capture-templates)))
     ad-do-it))
 
+
+;; Advising org-agenda
+
+(defsubst org-context-agenda--submenu-p (command)
+  "Return non-nil if the agenda command COMMAND is a sub-menu
+command."
+  (and (listp command) (stringp (cdr command))))
+
+(defsubst org-context-agenda--regular-p (command)
+  "Return non-nil if the agenda command COMMAND is a regular
+command."
+  (and (listp command) (> (length command) 2)))
+
 (defun org-context-agenda--expand-settings (command directory &optional files)
   "Expand the agenda command COMMAND by adding an
 org-agenda-buffer-name property and expanding org files path
@@ -440,16 +453,13 @@ Eventually use DIRECTORY to build the path to the targeted Org
 files."
   (mapcar
    (lambda (command)
-     (if (and (listp command) (stringp (cdr command)))
-         command ; Sub-menu command, return as is
-
-       ;; Expand if stolen
-       (if (and (listp command) (> (length command) 2))
-           ;; Add buffer-name and expand paths
-           (setq command (org-context-agenda--expand-settings command directory))
-         (setq command (org-context-agenda--expand-stolen command directory)))
-
-       command))
+     (cond
+      ((org-context-agenda--submenu-p command) ;; Sub-menu command, return as is
+       command)
+      ((org-context-agenda--regular-p command) ;; Expand if regular
+       (org-context-agenda--expand-settings command directory))
+      (t ;; Should be stolen then...
+       (org-context-agenda--expand-stolen command directory))))
    commands))
 
 (defun org-context-agenda-commands ()
