@@ -213,24 +213,28 @@ file-name and expand it against DIRECTORY."
 
     temp))
 
+(defsubst org-context-capture--submenu-p (template)
+  "Return non-nil if TEMPLATE is a capture submenu."
+  (and (listp temp)
+       (= (length temp) 2)
+       (stringp (cadr temp))
+       (> (length (cadr temp)) 2)))
+
+(defsubst org-context-capture--target-p (template)
+  "Return non-nil if TEMPLATE is a regular capture template."
+  (and (listp temp) (> (length temp) 2)))
+
 (defun org-context-capture--expand (templates directory)
   "Expand all capture templates in the list of templates TEMPLATES.
 Eventually use DIRECTORY to build the path to the targeted Org
 files."
   (mapcar
    (lambda (temp)
-     (if (and (listp temp)
-              (= (length temp) 2)
-              (stringp (cadr temp))
-              (> (length (cadr temp)) 2))
-         ;; This template is a sub-menu, return as is.
-         temp
-
-       (if (and (listp temp) (> (length temp) 2))
-           (setq temp (org-context-capture--expand-target temp directory))
-         (setq temp (org-context-capture--expand-stolen temp directory)))
-
-       temp))
+     (cond
+      ((org-context-capture--submenu-p temp) temp) ;; This template is a sub-menu, return as is.
+      ((org-context-capture--target-p temp)
+       (org-context-capture--expand-target temp directory))
+      (t (org-context-capture--expand-stolen temp directory))))
    templates))
 
 (defun org-context-capture-templates ()
