@@ -1,6 +1,6 @@
 ;;; org-context.el --- Contextual capture and agenda commands for Org-mode
 
-;; Copyright (C) 2012-2013 Sylvain Rousseau <thisirs at gmail dot com>
+;; Copyright (C) 2012-2014 Sylvain Rousseau <thisirs at gmail dot com>
 
 ;; Author: Sylvain Rousseau <thisirs at gmail dot com>
 ;; URL: https://github.com/thisirs/org-context
