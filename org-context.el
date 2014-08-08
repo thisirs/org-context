@@ -37,7 +37,7 @@
 ;; for contextual captures and `org-context-agenda-alist'
 ;; `org-context-agenda' for custom commands.
 
-;;; Code
+;;; Code:
 
 (require 'org)
 
