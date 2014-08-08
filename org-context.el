@@ -215,14 +215,14 @@ file-name and expand it against DIRECTORY."
 
 (defsubst org-context-capture--submenu-p (template)
   "Return non-nil if TEMPLATE is a capture submenu."
-  (and (listp temp)
-       (= (length temp) 2)
-       (stringp (cadr temp))
-       (> (length (cadr temp)) 2)))
+  (and (listp template)
+       (= (length template) 2)
+       (stringp (cadr template))
+       (> (length (cadr template)) 2)))
 
 (defsubst org-context-capture--target-p (template)
   "Return non-nil if TEMPLATE is a regular capture template."
-  (and (listp temp) (> (length temp) 2)))
+  (and (listp template) (> (length template) 2)))
 
 (defun org-context-capture--expand (templates directory)
   "Expand all capture templates in the list of templates TEMPLATES.
