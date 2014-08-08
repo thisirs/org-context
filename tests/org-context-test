@@ -1,6 +1,7 @@
 #!/bin/sh
 
-if [ -z "$EMACS" ]; then
+# In ansi-term $EMACS is 24.4.50.1 (term:0.96)...
+if [ ! -x "$EMACS" -o -z "$EMACS" ]; then
     export EMACS=emacs
 fi
 
