@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# In ansi-term $EMACS is 24.4.50.1 (term:0.96)...
-if [ ! -x "$EMACS" -o -z "$EMACS" ]; then
-    export EMACS=emacs
-fi
-
-exec "${EMACS}" -Q --no-site-lisp --script \
-    "$(dirname $0)/org-context-testrunner.el" "$@"

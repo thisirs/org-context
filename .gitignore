@@ -1,3 +1,4 @@
 .dir-locals.el
 todo.org
-test/
+.cask
+dist

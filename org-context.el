@@ -4,6 +4,7 @@
 
 ;; Author: Sylvain Rousseau <thisirs at gmail dot com>
 ;; URL: https://github.com/thisirs/org-context
+;; Version: 0.1
 ;; Keywords: Org, capture, agenda, convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -40,6 +41,8 @@
 ;;; Code:
 
 (require 'org)
+(require 'org-agenda)
+(require 'org-capture)
 
 (defvar org-context-capture-alist
   nil
