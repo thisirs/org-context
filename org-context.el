@@ -573,9 +573,11 @@ the new set of custom commands."
   (interactive "P")
   (if (< (prefix-numeric-value arg) 0)
       (progn (ad-deactivate 'org-capture)
-             (ad-deactivate 'org-agenda))
+             (ad-deactivate 'org-agenda)
+             (message "org-context is disabled"))
     (ad-activate 'org-capture)
-    (ad-activate 'org-agenda)))
+    (ad-activate 'org-agenda)
+    (message "org-context is enabled")))
 
 (provide 'org-context)
 
