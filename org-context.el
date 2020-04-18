@@ -315,11 +315,9 @@ templates."
 
     (or (nreverse merge) org-capture-templates)))
 
-(defadvice org-capture (around org-context-capture)
-  "Advice `org-capture' to allow contextual capture templates."
+(defun org-capture-advice (func &rest args)
   (let ((org-capture-templates (org-context-capture-templates)))
-    ad-do-it))
-
+    (apply func args)))
 
 ;; Advising org-agenda
 
@@ -542,13 +540,13 @@ command."
 
     (or (nreverse merge) org-agenda-custom-commands)))
 
-(defadvice org-agenda (around org-context-agenda)
+(defun org-agenda-advice (func &rest args)
   "Allow contextual agenda commands.
 
 The function `org-context-agenda-commands' is called to retrieve
 the new set of custom commands."
   (let ((org-agenda-custom-commands (org-context-agenda-commands)))
-    ad-do-it))
+    (apply func args)))
 
 ;;;###autoload
 (defun org-context-agenda-from (file-or-buffer key)
@@ -568,16 +566,19 @@ the new set of custom commands."
       (org-agenda nil key))))
 
 ;;;###autoload
-(defun org-context-activate (&optional arg)
-  "Activate `org-context' if ARG is non-numeric or >= 0."
-  (interactive "P")
-  (if (< (prefix-numeric-value arg) 0)
-      (progn (ad-deactivate 'org-capture)
-             (ad-deactivate 'org-agenda)
-             (message "org-context is disabled"))
-    (ad-activate 'org-capture)
-    (ad-activate 'org-agenda)
-    (message "org-context is enabled")))
+(define-minor-mode org-context-mode
+  "Minor mode to activate `org-context'."
+  :lighter ""
+  :global t
+  (if org-context-mode
+      (progn
+        (advice-remove 'org-capture #'org-capture-advice)
+        (advice-remove 'org-agenda #'org-agenda-advice))
+    (advice-add 'org-capture :around #'org-capture-advice)
+    (advice-add 'org-agenda :around #'org-agenda-advice)))
+
+;;;###autoload
+(define-obsolete-function-alias 'org-context-activate 'org-context-mode)
 
 (provide 'org-context)
 
