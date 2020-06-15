@@ -572,10 +572,10 @@ the new set of custom commands."
   :global t
   (if org-context-mode
       (progn
-        (advice-remove 'org-capture #'org-capture-advice)
-        (advice-remove 'org-agenda #'org-agenda-advice))
-    (advice-add 'org-capture :around #'org-capture-advice)
-    (advice-add 'org-agenda :around #'org-agenda-advice)))
+        (advice-add 'org-capture :around #'org-capture-advice)
+        (advice-add 'org-agenda :around #'org-agenda-advice))
+    (advice-remove 'org-capture #'org-capture-advice)
+    (advice-remove 'org-agenda #'org-agenda-advice)))
 
 ;;;###autoload
 (define-obsolete-function-alias 'org-context-activate 'org-context-mode)
