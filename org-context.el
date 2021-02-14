@@ -606,7 +606,7 @@ the new set of custom commands."
     (advice-remove 'org-agenda #'org-agenda-advice)))
 
 ;;;###autoload
-(define-obsolete-function-alias 'org-context-activate 'org-context-mode)
+(define-obsolete-function-alias 'org-context-activate 'org-context-mode "0.0.5")
 
 (provide 'org-context)
 
