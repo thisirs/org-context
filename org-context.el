@@ -32,7 +32,7 @@
 ;; Put the following in your .emacs:
 ;;
 ;; (require 'org-context)
-;; (org-context-activate)
+;; (org-context-mode +1)
 ;;
 ;; and customize `org-context-capture-alist' and `org-context-capture'
 ;; for contextual captures and `org-context-agenda-alist'
@@ -322,13 +322,11 @@ templates."
 ;; Advising org-agenda
 
 (defsubst org-context-agenda--submenu-p (command)
-  "Return non-nil if the agenda command COMMAND is a sub-menu
-command."
+  "Return non-nil if the agenda command COMMAND is a sub-menu command."
   (and (listp command) (stringp (cdr command))))
 
 (defsubst org-context-agenda--regular-p (command)
-  "Return non-nil if the agenda command COMMAND is a regular
-command."
+  "Return non-nil if the agenda command COMMAND is a regular command."
   (and (listp command) (> (length command) 2)))
 
 (defun org-context-agenda--expand-settings (command directory &optional files)
@@ -386,7 +384,7 @@ against DIRECTORY."
         (list (car command) (nth 1 command) type (nth 3 command) settings)))))
 
 (defun org-context-agenda--expand-alist (alist directory &optional files)
-  "Expand the property list ALIST.
+  "Add or update an `org-agenda-files' property in ALIST.
 
 Add an `org-agenda-files' property if not already present and
 expand its files against DIRECTORY or expand FILES against
@@ -408,16 +406,20 @@ DIRECTORY if no files are present."
                 alist)))
 
 (defun org-context-agenda--expand-stolen (command directory)
-  "Expand a regular agenda command."
+  "Steal an agenda command and expand it."
+
   (let (key stolen files desc new-command)
     (cond
+     ;; Just a key "t"
      ((stringp command)
       (setq stolen command
             key command))
 
+     ;; A symbol
      ((symbolp command)
       (setq stolen command))
 
+     ;; Other configurations
      ((listp command)
       (setq key (car command))
       (let* ((rest (cadr command))
@@ -457,9 +459,11 @@ DIRECTORY if no files are present."
     command))
 
 (defun org-context-agenda--expand (commands directory)
-  "Expand all agenda commands in the list of commands COMMANDS.
-Eventually use DIRECTORY to build the path to the targeted Org
-files."
+  "Expand all agenda commands in list of commands COMMANDS.
+
+Return sub-menu command unchanged. Expand regular commands and
+stolen ones. Eventually use DIRECTORY to build the path to the
+targeted Org files."
   (mapcar
    (lambda (command)
      (cond
