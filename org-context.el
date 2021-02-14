@@ -329,59 +329,83 @@ templates."
   "Return non-nil if the agenda command COMMAND is a regular command."
   (and (listp command) (> (length command) 2)))
 
-(defun org-context-agenda--expand-settings (command directory &optional files)
-  "Expand the agenda command COMMAND by adding an
-org-agenda-buffer-name property and expanding org files path
-against DIRECTORY."
-  (let (type settings)
+(defun org-context-agenda--add-org-agenda-buffer-name (settings directory)
+  "Add `org-agenda-buffer-name' setting to SETTINGS."
+  (cons `(org-agenda-buffer-name
+          ,(format
+            "*Agenda(%s:%s)*"
+            (if directory
+                (file-name-nondirectory
+                 (directory-file-name
+                  directory)) "??")
+            (car command)))
+        settings))
 
-    ;; First normalize different versions
-    (setq command
-          (cond
-           ((stringp (nth 1 command)) command)
-           ((not (nth 1 command)) (cons (car command) (cons "" (cddr command))))
-           (t (cons (car command) (cons "" (cdr command))))))
+(defun org-context-agenda--add-org-agenda-files (alist directory &optional files)
+  (unless (assoc 'org-agenda-files alist)
+    (setq alist (cons (cons 'org-agenda-files nil) alist)))
+  (setq alist
+        (mapcar (lambda (entry)
+                  (if (eq (car entry) 'org-agenda-files)
+                      (list 'org-agenda-files
+                            (list 'quote
+                                  (mapcar
+                                   (lambda (file)
+                                     (if (file-name-absolute-p file)
+                                         file
+                                       (expand-file-name file directory)))
+                                   (or files (cadr (cadr entry))))))
+                    entry))
+                alist)))
 
-    ;; Settings is at a different place if type is a bloc agenda
-    (setq type (nth 2 command))
-    (if (listp type)
-        (setq settings (nth 3 command))
-      (setq settings (nth 4 command)))
+(defun org-context-agenda--expand-composite (command directory &optional org-files)
+  ;; COMMAND is like (key desc (cmd1 cmd2 ...) general-settings-for-whole-set files)
+  (seq-let (key desc subcommands settings files) command
+    (setq settings (org-context-agenda--add-org-agenda-files settings directory org-files))
+    (setq settings (org-context-agenda--add-org-agenda-buffer-name settings directory))
+    (setq subcommands
+          (mapcar
+           (lambda (command)
+             (let ((alist (nth 2 command)))
+               (if alist
+                   (cons (car command)
+                         (list (nth 1 command)
+                               (org-context-agenda--add-org-agenda-files alist directory)))
+                 command)))
+           subcommands))
+    (if (null files)
+        (list key desc subcommands settings)
+      (list key desc subcommands settings files))))
 
-    ;; Expand org-agenda-files key in type
-    (when (listp type)
-      (setq type
-            (mapcar
-             (lambda (sub-type)
-               (let ((alist (nth 2 sub-type)))
-                 (if alist
-                     (cons (car sub-type)
-                           (list (nth 1 sub-type)
-                                 (org-context-agenda--expand-alist
-                                  alist directory)))
-                   sub-type)))
-             (nth 2 command))))
+(defun org-context-agenda--expand-simple (command directory &optional org-files)
+  ;; COMMAND is like (key desc type match settings files), we only
+  ;; have to update settings
+  (seq-let (key desc type match settings files) command
+    (setq settings (org-context-agenda--add-org-agenda-files settings directory org-files))
+    (setq settings (org-context-agenda--add-org-agenda-buffer-name settings directory))
+    (if (null files)
+        (list key desc type match settings)
+      (list key desc type match settings files))))
 
-    ;; Expand settings
-    (setq settings
-          (cons `(org-agenda-buffer-name
-                  ,(format
-                    "*Agenda(%s:%s)*"
-                    (if directory
-                        (file-name-nondirectory
-                         (directory-file-name
-                          directory)) "??")
-                    (car command)))
-                (org-context-agenda--expand-alist settings directory files)))
+(defun org-context-agenda--expand-regular (command directory &optional files)
+  "Update or add settings slot in agenda command COMMAND.
 
-    (if (listp type)
-        (if (nth 4 command)
-            (list (car command) (nth 1 command) type settings (nth 4 command))
-          (list (car command) (nth 1 command) type settings))
-      (if (nth 5 command)
-          (list (car command) (nth 1 command) type (nth 3 command) settings
-                (nth 5 command))
-        (list (car command) (nth 1 command) type (nth 3 command) settings)))))
+Add an `org-agenda-buffer-name' setting based on the key in
+COMMAND and on DIRECTORY and add an `org-agenda-files' setting
+based on DIRECTORY and FILES."
+  ;; First normalize different agenda command versions
+  (setq command
+        (cond
+         ((stringp (nth 1 command)) command)
+         ((not (nth 1 command)) (cons (car command) (cons "" (cddr command))))
+         (t (cons (car command) (cons "" (cdr command))))))
+
+  ;; Regular agenda commands are either simple (key desc type match
+  ;; settings files) or composite (key desc (cmd1 cmd2 ...)
+  ;; general-settings-for-whole-set files) based on type
+  (if (listp (nth 2 command))
+      (org-context-agenda--expand-composite command directory files)
+    (org-context-agenda--expand-simple command directory files)))
 
 (defun org-context-agenda--expand-alist (alist directory &optional files)
   "Add or update an `org-agenda-files' property in ALIST.
@@ -453,7 +477,7 @@ DIRECTORY if no files are present."
         (setq command (cons (car command) (cons desc (cddr command)))))
 
     (setq command
-          (org-context-agenda--expand-settings
+          (org-context-agenda--expand-regular
            command directory files))
 
     command))
@@ -470,7 +494,7 @@ targeted Org files."
       ((org-context-agenda--submenu-p command) ;; Sub-menu command, return as is
        command)
       ((org-context-agenda--regular-p command) ;; Expand if regular
-       (org-context-agenda--expand-settings command directory))
+       (org-context-agenda--expand-regular command directory))
       (t ;; Should be stolen then...
        (org-context-agenda--expand-stolen command directory))))
    commands))
