@@ -354,7 +354,7 @@ templates."
                                      (if (file-name-absolute-p file)
                                          file
                                        (expand-file-name file directory)))
-                                   (or files (cadr (cadr entry))))))
+                                   (or files (cadr (cadr entry)) (list "todo.org")))))
                     entry))
                 alist)))
 
@@ -452,8 +452,6 @@ DIRECTORY if no files are present."
         (setq stolen (nth 0 rest)
               files (if (listp f) f (list f))
               desc (nth 2 rest)))))
-
-    (setq files (or files (list "todo.org")))
 
     (setq command (if (stringp stolen)
                       (assoc stolen org-agenda-custom-commands)
