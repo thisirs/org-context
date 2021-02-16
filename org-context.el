@@ -43,6 +43,7 @@
 (require 'org)
 (require 'org-agenda)
 (require 'org-capture)
+(require 'seq)
 
 (defvar org-context-capture-alist
   nil
