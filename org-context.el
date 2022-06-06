@@ -45,6 +45,7 @@
 (require 'org-capture)
 (require 'seq)
 
+;;;###autoload
 (defvar org-context-capture-alist
   nil
   "Alist that specifies contextual capture templates.
@@ -56,11 +57,12 @@ TEMPLATE-LIST is a list of contextual capture templates as
 described in the Org manual that will be added to the set of
 default ones.")
 
-(defvar org-context-capture nil
-  "Buffer local variable that holds the templates definitions.")
-(make-variable-buffer-local 'org-context-capture)
-(put 'org-context-capture 'safe-local-variable 'org-context-capture-safe-p)
+;;;###autoload
+(progn (defvar-local org-context-capture nil
+         "Buffer local variable that holds the templates definitions.")
+       (put 'org-context-capture 'safe-local-variable 'org-context-capture-safe-p))
 
+;;;###autoload
 (defun org-context-capture-safe-p (templates)
   "Return non-nil if the list of capture templates TEMPLATES is safe.
 
@@ -88,16 +90,18 @@ arbitrary functions."
       (setq safe nil))
     safe))
 
+;;;###autoload
 (defvar org-context-agenda-alist
   nil
   "Alist of filename patterns vs corresponding custom agenda
   list.")
 
-(defvar org-context-agenda nil
-  "Buffer local variable that holds the custom agenda commands.")
-(make-variable-buffer-local 'org-context-agenda)
-(put 'org-context-agenda 'safe-local-variable 'org-context-agenda-safe-p)
+;;;###autoload
+(progn (defvar-local org-context-agenda nil
+         "Buffer local variable that holds the custom agenda commands.")
+       (put 'org-context-agenda 'safe-local-variable 'org-context-agenda-safe-p))
 
+;;;###autoload
 (defun org-context-agenda-safe-p (commands)
   "Return non-nil if the list of agenda commands COMMANDS is safe.
 
